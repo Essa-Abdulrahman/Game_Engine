@@ -1,0 +1,53 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "ODYSSEY_BUILD_TESTS": "ON",
+        "ODYSSEY_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    { "name": "debug", "displayName": "Debug", "inherits": "base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" } },
+    { "name": "release", "displayName": "Release", "inherits": "base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" } },
+    { "name": "dist", "displayName": "Dist", "inherits": "base", "cacheVariables": { "CMAKE_BUILD_TYPE": "Dist" } },
+    {
+      "name": "debug-sanitizers",
+      "displayName": "Debug with ASan + UBSan (Linux/macOS)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "ODYSSEY_ENABLE_SANITIZERS": "ON" },
+      "condition": { "type": "notEquals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "vs2022",
+      "displayName": "Visual Studio 2022 (multi-config)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": { "ODYSSEY_BUILD_TESTS": "ON", "ODYSSEY_WARNINGS_AS_ERRORS": "ON" },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "debug" },
+    { "name": "release", "configurePreset": "release" },
+    { "name": "dist", "configurePreset": "dist" },
+    { "name": "debug-sanitizers", "configurePreset": "debug-sanitizers" },
+    { "name": "vs2022-debug", "configurePreset": "vs2022", "configuration": "Debug" },
+    { "name": "vs2022-release", "configurePreset": "vs2022", "configuration": "Release" },
+    { "name": "vs2022-dist", "configurePreset": "vs2022", "configuration": "Dist" }
+  ],
+  "testPresets": [
+    { "name": "base", "hidden": true, "output": { "outputOnFailure": true }, "execution": { "noTestsAction": "error" } },
+    { "name": "debug", "inherits": "base", "configurePreset": "debug" },
+    { "name": "release", "inherits": "base", "configurePreset": "release" },
+    { "name": "dist", "inherits": "base", "configurePreset": "dist" },
+    { "name": "debug-sanitizers", "inherits": "base", "configurePreset": "debug-sanitizers" },
+    { "name": "vs2022-debug", "inherits": "base", "configurePreset": "vs2022", "configuration": "Debug" },
+    { "name": "vs2022-release", "inherits": "base", "configurePreset": "vs2022", "configuration": "Release" }
+  ]
+}

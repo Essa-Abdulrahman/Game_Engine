@@ -1,0 +1,41 @@
+# Odyssey code style (Hazel conventions). Naming is enforced by .clang-tidy and tools/check_style.py.
+---
+Language: Cpp
+Standard: c++20
+BasedOnStyle: Microsoft
+
+UseTab: ForIndentation
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+ColumnLimit: 0
+
+BreakBeforeBraces: Allman
+AccessModifierOffset: -4
+NamespaceIndentation: All
+IndentCaseLabels: true
+IndentPPDirectives: BeforeHash
+FixNamespaceComments: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 1
+
+PointerAlignment: Left
+ReferenceAlignment: Left
+SpaceAfterTemplateKeyword: false
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: CurrentLine
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+
+AlignConsecutiveMacros: Consecutive
+AlignTrailingComments: true
+SortIncludes: Never
+IncludeBlocks: Preserve
+...
