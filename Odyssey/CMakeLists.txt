@@ -1,48 +1,40 @@
-# Odyssey engine static library. Source files are listed explicitly; add new files here (see AGENTS.md).
+cmake_minimum_required(VERSION 3.25)
 
-set(ODYSSEY_SOURCES
-	src/Odyssey.h
-	src/odpch.h
+# Must be set before project() to take effect. std::format with floating point requires macOS 13.3.
+if (APPLE AND NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET)
+	set(CMAKE_OSX_DEPLOYMENT_TARGET "13.3" CACHE STRING "Minimum macOS version")
+endif()
 
-	src/Odyssey/Core/Assert.cpp
-	src/Odyssey/Core/Assert.h
-	src/Odyssey/Core/Base.h
-	src/Odyssey/Core/Buffer.cpp
-	src/Odyssey/Core/Buffer.h
-	src/Odyssey/Core/CommandLine.cpp
-	src/Odyssey/Core/CommandLine.h
-	src/Odyssey/Core/Environment.cpp
-	src/Odyssey/Core/Environment.h
-	src/Odyssey/Core/FileSystem.cpp
-	src/Odyssey/Core/FileSystem.h
-	src/Odyssey/Core/Hash.h
-	src/Odyssey/Core/KeyCodes.cpp
-	src/Odyssey/Core/KeyCodes.h
-	src/Odyssey/Core/Layer.cpp
-	src/Odyssey/Core/Layer.h
-	src/Odyssey/Core/LayerStack.cpp
-	src/Odyssey/Core/LayerStack.h
-	src/Odyssey/Core/Log.cpp
-	src/Odyssey/Core/Log.h
-	src/Odyssey/Core/StringUtils.cpp
-	src/Odyssey/Core/StringUtils.h
-	src/Odyssey/Core/Timer.h
-	src/Odyssey/Core/Timestep.h
-	src/Odyssey/Core/UUID.cpp
-	src/Odyssey/Core/UUID.h
+project(Odyssey
+	VERSION 0.1.0
+	DESCRIPTION "Odyssey 3D game engine"
+	LANGUAGES C CXX)
 
-	src/Odyssey/Events/ApplicationEvent.h
-	src/Odyssey/Events/Event.h
-	src/Odyssey/Events/KeyEvent.h
-	src/Odyssey/Events/MouseEvent.h)
+if (PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
+	message(FATAL_ERROR "In-source builds are not supported. Use a preset, eg. 'cmake --preset debug'.")
+endif()
 
-add_library(Odyssey STATIC ${ODYSSEY_SOURCES})
-odyssey_configure_target(Odyssey)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-target_include_directories(Odyssey PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
-target_precompile_headers(Odyssey PRIVATE src/odpch.h)
+option(ODYSSEY_BUILD_TESTS "Build the Odyssey unit tests" ON)
+option(ODYSSEY_WARNINGS_AS_ERRORS "Treat compiler warnings as errors in Odyssey targets" ON)
+option(ODYSSEY_ENABLE_SANITIZERS "Build Odyssey targets with AddressSanitizer and UndefinedBehaviorSanitizer (GCC/Clang)" OFF)
 
-find_package(Threads REQUIRED)
-target_link_libraries(Odyssey PUBLIC Threads::Threads)
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+include(OdysseyConfigurations)
+include(OdysseyCompilerOptions)
+include(OdysseyDependencies)
 
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ODYSSEY_SOURCES})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+
+add_subdirectory(Odyssey)
+
+if (ODYSSEY_BUILD_TESTS)
+	enable_testing()
+	add_subdirectory(OdysseyTests)
+endif()
